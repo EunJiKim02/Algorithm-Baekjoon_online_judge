@@ -5,22 +5,22 @@ input = sys.stdin.readline
 
 pq = []
 ans = []
+arr = []
 
 N = int(input())
+pq = []
 
-for _ in range(N):
+for i in range(N):
     n, s, f = map(int, input().split())
-    heapq.heappush(pq, (s, f))
+    arr.append([s, f])
 
-while(len(pq) != 0):
-    x = heapq.heappop(pq)
-    if len(ans) == 0 :
-        ans.append(x[1])
+arr.sort()
+heapq.heappush(pq, arr[0][1])
+
+for i in range(1, N):
+    if pq[0] > arr[i][0]:
+        heapq.heappush(pq,arr[i][1])
     else:
-        m = min(ans)
-        if m > x[0]:
-            ans.append(x[1])    
-        else:
-            ans[ans.index(m)] = x[1]
-
-print(len(ans))
+        heapq.heappop(pq)
+        heapq.heappush(pq,arr[i][1])
+print(len(pq))
