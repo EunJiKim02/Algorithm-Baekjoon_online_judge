@@ -3,18 +3,8 @@ import math
 
 input = sys.stdin.readline
 
-def myround(n):
-  if (n - int(n)) >= 0.5:
-    return int(n) + 1
-  else:
-    return int(n)
-
 def ccw(i, j, k):
-    area2 = (j[0] - i[0]) * (k[1] - i[1]) - (j[1] - i[1]) * (k[0] - i[0])
-    if area2 > 0:
-        return True
-    else:
-        return False 
+  return (j[0]-i[0]) * (k[1]-j[1]) - (j[1]-i[1])*(k[0]-j[0])
 
 def ConvexHull(point, N): 
     # 시작점 찾기 ( y 값이 가장 작은 값 )
@@ -41,7 +31,7 @@ def ConvexHull(point, N):
     stack.append((angle[1][0], angle[1][1]))
 
     for i in range(2, N):
-        while (len(stack) > 2) and not ccw( stack[-2], stack[-1], angle[i]):
+        while (len(stack) > 2) and ccw( stack[-2], stack[-1], angle[i]) <= 0:
             stack.pop()
       
         stack.append((angle[i][0], angle[i][1]))
@@ -53,31 +43,25 @@ def distance(a, b):
     return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
 
 def curvedistance(a, b, c, k):
-    A = round(distance(a, b),10)
-    B = round(distance(b, c), 10)
-    C = round(distance(c, a), 10)
+    A = distance(a, b)
+    B = distance(b, c)
+    C = distance(c, a)
 
     costheta = round((A ** 2 + B ** 2 - C ** 2) / (2 * A * B), 10)
-    #print(a, b, c)
-    #print(A, B, C, costheta)
     ang = math.acos(costheta)
-    #print(ang)
     return (k) * (math.pi - ang)
 
 def getlength(convex, L):
     convex.append(convex[0])
     N = len(convex)
-    #print(convex, N)
     linelength = 0
     curvelength = 0
     for i in range(N-1): # ~N
         linelength += distance(convex[i], convex[i+1])
-    #print(linelength)
     for i in range(N-2): # ~N
-      #print(i)
-      curvelength += curvedistance(convex[i], convex[i+1], convex[i+2], L)
+        curvelength += curvedistance(convex[i], convex[i+1], convex[i+2], L)
     curvelength += curvedistance(convex[-2], convex[-1], convex[1], L)
-    return myround(linelength + curvelength)
+    return round(linelength + curvelength)
 
 
 N, L = map(int, input().split())
